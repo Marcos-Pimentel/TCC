@@ -360,7 +360,7 @@ for input_file in files:
     model.setObjective(x.prod(depot_dist), GRB.MINIMIZE)
 
     model.Params.LazyConstraints = 1
-    model.setParam('TimeLimit', 3600)
+    model.setParam('TimeLimit', 600)
 
     #run
     model.optimize(mycallback)
