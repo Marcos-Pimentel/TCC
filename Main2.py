@@ -253,8 +253,6 @@ for input_file in files:
     #format: {(1, (2, 14)): 60, (1, (2, 3)): 41}
     depot_edge, depot_dist = gp.multidict(dictionary)
 
-    dictionary = dict()
-
     #PARITY LOOSE
     # list of vertices to assign if a vertex loose its parity or not
     parity_loose = list()
@@ -264,20 +262,32 @@ for input_file in files:
     #list of odd parity vertices
     vertices_odd = list()
 
+
+    #        AQUI ----------------------------------------------------------------
+
+    dictio = defaultdict(lambda: 0)
+
     for i in range(len(vertices)+1):
-        dictionary[i] = 0
+        dictio[i] = 0
         if i != 0:
             parity_loose.append(i)
 
+
+
     for e in edges:
-        dictionary[e[0]] += 1
-        dictionary[e[1]] += 1
+        dictio[e[0]] += 1
+        dictio[e[1]] += 1
+
 
     for i in range(len(vertices)+1):
-        if i != 0 and dictionary[i]%2 == 0:
+        if i != 0 and dictio[i]%2 == 0:
             vertices_even.append(i)
-        elif i != 0 and dictionary[i]%2 == 1:
+        elif i != 0 and dictio[i]%2 == 1:
             vertices_odd.append(i)
+    
+    
+    
+    #        AQUI ----------------------------------------------------------------
 
     dictionary = dict()
 
