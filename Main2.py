@@ -267,10 +267,8 @@ for input_file in files:
 
     dictio = defaultdict(lambda: 0)
 
-    for i in range(len(vertices)+1):
-        dictio[i] = 0
-        if i != 0:
-            parity_loose.append(i)
+    for i in vertices:
+        parity_loose.append(i)
 
 
 
@@ -279,10 +277,10 @@ for input_file in files:
         dictio[e[1]] += 1
 
 
-    for i in range(len(vertices)+1):
-        if i != 0 and dictio[i]%2 == 0:
+    for i in vertices:
+        if dictio[i]%2 == 0:
             vertices_even.append(i)
-        elif i != 0 and dictio[i]%2 == 1:
+        else:
             vertices_odd.append(i)
     
     
