@@ -159,6 +159,10 @@ def mycallback(model, where):
 
 #read the JSON file
 
+with open("logbook", "w") as log:
+    log.write("\n")
+
+
 files = next(walk(path), (None, None, []))[2]
 
 for input_file in files:
@@ -166,6 +170,9 @@ for input_file in files:
     file_path = path+input_file
 
     input_content = read_input(file_path)
+
+    with open("logbook", "a") as log:
+        log.write(input_file + ' ')
 
     #TOLERANCE (values suggested by Garcia-Ayala's paper)
     tolerance = (0.1, 0.05)
@@ -370,21 +377,27 @@ for input_file in files:
     model.write(f"{path}output/{input_file}")
 
 
+    if model.objval != float('inf'):
 
+        with open("logbook", "a") as log:
+            log.write("SIM \n")
 
-    i = 0
-    G = nx.Graph()
-    for p in depots:
-        edges_p = variable_regex_final(p)
-        
-        i +=1
-        for e in edges_p.keys():
-            if edges_p[e] > 0.9:
-                G.add_edge(e[0], e[1],color =50*i,weight = 2)
-    colors = nx.get_edge_attributes(G, 'color').values()
-    weights = nx.get_edge_attributes(G, 'weight').values()
-    pos = nx.planar_layout(G)
-    nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
-    aux = input_file.split('.')[0]
-    plt.savefig(f'{path}IMG/{aux}.PNG')
-    plt.clf()
+        i = 0
+        G = nx.Graph()
+        for p in depots:
+            edges_p = variable_regex_final(p)
+            
+            i +=1
+            for e in edges_p.keys():
+                if edges_p[e] > 0.9:
+                    G.add_edge(e[0], e[1],color =50*i,weight = 2)
+        colors = nx.get_edge_attributes(G, 'color').values()
+        weights = nx.get_edge_attributes(G, 'weight').values()
+        pos = nx.planar_layout(G)
+        nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
+        aux = input_file.split('.')[0]
+        plt.savefig(f'{path}IMG/{aux}.PNG')
+        plt.clf()
+    else:
+        with open("logbook", "a") as log:
+            log.write("nao \n")
