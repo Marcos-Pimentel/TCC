@@ -4,6 +4,7 @@ from os import walk
 in_path = 'Test/'
 out_path = 'Test/output/'
 write = 'working/'
+write2 = 'time_limit/'
 
 def read_input(file):
     content = None
@@ -18,6 +19,7 @@ for file in files:
     in_file_path = in_path+file
     out_file_path = out_path+file
     write_path = write+file
+    write2_path = write2+file
     
     in_content = read_input(in_file_path)
     out_content = read_input(out_file_path)
@@ -25,3 +27,6 @@ for file in files:
     if out_content['SolutionInfo']['ObjVal'] != 1e+100:
         with open(write_path, 'w') as arq:
             json.dump(in_content, arq)
+        if out_content['SolutionInfo']['Status'] == 9:
+            with open(write2_path, 'w') as arq:
+                json.dump(in_content, arq)
