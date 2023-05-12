@@ -347,9 +347,9 @@ for input_file in files:
     b = model.addVars(depot_dist, name="DepotEdgeDistance") # pode ser excluida
     x = model.addVars(depot_edge, vtype=gp.GRB.BINARY, name="DepotEdgeAssign")
     w = model.addVars(depot_vertex, vtype=gp.GRB.BINARY, name="DepotVertexIncident")
-    z = model.addVars(parity, lb = 0, name = "Parity")
+    z = model.addVars(parity, vtype=gp.GRB.INTEGER, lb = 0, name = "Parity")
     z_0 = model.addVars(parity_0, vtype=gp.GRB.BINARY, name = "OddParity")
-    r = model.addVars(parity_loose, vtype=gp.GRB.BINARY)
+    r = model.addVars(parity_loose, vtype=gp.GRB.BINARY, name = "LooseParity")
 
     #constrains
     constrain_2 = model.addConstrs((gp.quicksum(x[p,e] for p in depots) == 1 for e in edges), name='constrain2')
