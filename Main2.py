@@ -7,7 +7,7 @@ import re
 import matplotlib.pyplot as plt
 from os import walk
 
-path = "working/"
+path = "time_limit/"
 
 def read_input(file):
     content = None
