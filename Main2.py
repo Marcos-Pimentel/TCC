@@ -7,7 +7,8 @@ import re
 import matplotlib.pyplot as plt
 from os import walk
 
-path = "time_limit/"
+inpath = "Instances/"
+outpath = "tests_010_020/"
 
 def read_input(file):
     content = None
@@ -163,11 +164,11 @@ with open("logbook", "w") as log:
     log.write("\n")
 
 
-files = next(walk(path), (None, None, []))[2]
+files = next(walk(inpath), (None, None, []))[2]
 
 for input_file in files:
 
-    file_path = path+input_file
+    file_path = inpath+input_file
 
     input_content = read_input(file_path)
 
@@ -175,7 +176,7 @@ for input_file in files:
         log.write(input_file + ' ')
 
     #TOLERANCE (values suggested by Garcia-Ayala's paper)
-    tolerance = (0.1, 0.05)
+    tolerance = (0.1, 0.1)
 
     #DEPOTS
     #list of depots
@@ -335,7 +336,7 @@ for input_file in files:
     pos = nx.planar_layout(G)
     nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
     aux = input_file.split('.')[0]
-    plt.savefig(f'{path}IMG/input/{aux}.PNG')
+    plt.savefig(f'{outpath}IMG/input/{aux}.PNG')
     plt.clf()
     
     
@@ -374,7 +375,7 @@ for input_file in files:
     #run
     model.optimize(mycallback)
 
-    model.write(f"{path}output/{input_file}")
+    model.write(f"{outpath}output/{input_file}")
 
 
     if model.objval != float('inf'):
@@ -396,7 +397,7 @@ for input_file in files:
         pos = nx.planar_layout(G)
         nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
         aux = input_file.split('.')[0]
-        plt.savefig(f'{path}IMG/{aux}.PNG')
+        plt.savefig(f'{outpath}IMG/{aux}.PNG')
         plt.clf()
     else:
         with open("logbook", "a") as log:
