@@ -7,7 +7,8 @@ import re
 import matplotlib.pyplot as plt
 from os import walk
 
-path = "Test/"
+inpath = "Instances/"
+outpath = "tests_010_020/"
 
 def read_input(file):
     content = None
@@ -159,16 +160,23 @@ def mycallback(model, where):
 
 #read the JSON file
 
-files = next(walk(path), (None, None, []))[2]
+with open("logbook", "w") as log:
+    log.write("\n")
+
+
+files = next(walk(inpath), (None, None, []))[2]
 
 for input_file in files:
 
-    file_path = path+input_file
+    file_path = inpath+input_file
 
     input_content = read_input(file_path)
 
+    with open("logbook", "a") as log:
+        log.write(input_file + ' ')
+
     #TOLERANCE (values suggested by Garcia-Ayala's paper)
-    tolerance = (0.1, 0.05)
+    tolerance = (0.1, 0.1)
 
     #DEPOTS
     #list of depots
@@ -253,8 +261,6 @@ for input_file in files:
     #format: {(1, (2, 14)): 60, (1, (2, 3)): 41}
     depot_edge, depot_dist = gp.multidict(dictionary)
 
-    dictionary = dict()
-
     #PARITY LOOSE
     # list of vertices to assign if a vertex loose its parity or not
     parity_loose = list()
@@ -264,20 +270,30 @@ for input_file in files:
     #list of odd parity vertices
     vertices_odd = list()
 
-    for i in range(len(vertices)+1):
-        dictionary[i] = 0
-        if i != 0:
-            parity_loose.append(i)
+
+    #        AQUI ----------------------------------------------------------------
+
+    dictio = defaultdict(lambda: 0)
+
+    for i in vertices:
+        parity_loose.append(i)
+
+
 
     for e in edges:
-        dictionary[e[0]] += 1
-        dictionary[e[1]] += 1
+        dictio[e[0]] += 1
+        dictio[e[1]] += 1
 
-    for i in range(len(vertices)+1):
-        if i != 0 and dictionary[i]%2 == 0:
+
+    for i in vertices:
+        if dictio[i]%2 == 0:
             vertices_even.append(i)
-        elif i != 0 and dictionary[i]%2 == 1:
+        else:
             vertices_odd.append(i)
+    
+    
+    
+    #        AQUI ----------------------------------------------------------------
 
     dictionary = dict()
 
@@ -320,7 +336,7 @@ for input_file in files:
     pos = nx.planar_layout(G)
     nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
     aux = input_file.split('.')[0]
-    plt.savefig(f'{path}IMG/input/{aux}.PNG')
+    plt.savefig(f'{outpath}IMG/input/{aux}.PNG')
     plt.clf()
     
     
@@ -332,9 +348,9 @@ for input_file in files:
     b = model.addVars(depot_dist, name="DepotEdgeDistance") # pode ser excluida
     x = model.addVars(depot_edge, vtype=gp.GRB.BINARY, name="DepotEdgeAssign")
     w = model.addVars(depot_vertex, vtype=gp.GRB.BINARY, name="DepotVertexIncident")
-    z = model.addVars(parity, lb = 0, name = "Parity")
+    z = model.addVars(parity, vtype=gp.GRB.INTEGER, lb = 0, name = "Parity")
     z_0 = model.addVars(parity_0, vtype=gp.GRB.BINARY, name = "OddParity")
-    r = model.addVars(parity_loose, vtype=gp.GRB.BINARY)
+    r = model.addVars(parity_loose, vtype=gp.GRB.BINARY, name = "LooseParity")
 
     #constrains
     constrain_2 = model.addConstrs((gp.quicksum(x[p,e] for p in depots) == 1 for e in edges), name='constrain2')
@@ -359,24 +375,30 @@ for input_file in files:
     #run
     model.optimize(mycallback)
 
-    model.write(f"{path}output/{input_file}")
+    model.write(f"{outpath}output/{input_file}")
 
 
+    if model.objval != float('inf'):
 
+        with open("logbook", "a") as log:
+            log.write("SIM \n")
 
-    i = 0
-    G = nx.Graph()
-    for p in depots:
-        edges_p = variable_regex_final(p)
-        
-        i +=1
-        for e in edges_p.keys():
-            if edges_p[e] > 0.9:
-                G.add_edge(e[0], e[1],color =50*i,weight = 2)
-    colors = nx.get_edge_attributes(G, 'color').values()
-    weights = nx.get_edge_attributes(G, 'weight').values()
-    pos = nx.planar_layout(G)
-    nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
-    aux = input_file.split('.')[0]
-    plt.savefig(f'{path}IMG/{aux}.PNG')
-    plt.clf()
+        i = 0
+        G = nx.Graph()
+        for p in depots:
+            edges_p = variable_regex_final(p)
+            
+            i +=1
+            for e in edges_p.keys():
+                if edges_p[e] > 0.9:
+                    G.add_edge(e[0], e[1],color =50*i,weight = 2)
+        colors = nx.get_edge_attributes(G, 'color').values()
+        weights = nx.get_edge_attributes(G, 'weight').values()
+        pos = nx.planar_layout(G)
+        nx.draw(G, pos, edge_color=colors, width=list(weights), node_size=1, with_labels=True)
+        aux = input_file.split('.')[0]
+        plt.savefig(f'{outpath}IMG/{aux}.PNG')
+        plt.clf()
+    else:
+        with open("logbook", "a") as log:
+            log.write("nao \n")

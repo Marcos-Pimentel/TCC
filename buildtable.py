@@ -5,11 +5,13 @@ import json
 from os import walk
 import networkx.algorithms.euler as euler
 from itertools import combinations
+import sys
+import matplotlib.pyplot as plt
 
 #in the output files, there is no weight on the edges, so it is needed to also use the input files to get these values
 
-out_path = "Test/output/"
-in_path = "Test/"
+out_path = "tests_010_005/output/"
+in_path = "tests_010_005/"
 
 
 def eulerize(G):
@@ -114,6 +116,8 @@ def read_input(file):
 
 files = next(walk(out_path), (None, None, []))[2]
 
+dict_list = list()
+
 for file in files:
     
     in_file_path = in_path+file
@@ -133,29 +137,49 @@ for file in files:
     gap = solution_info['MIPGap']
     objective = solution_info['ObjVal']
     
+    
     if objective != 1e+100:
         out_vars = out_content['Vars']
         
         #create the graph for each district
         
         deadhead = 0
+        gained_imparity = 0
+        imparity_quotient = 0
         
         for d in in_content['DEPOTS']:
             G = nx.Graph()
             aux_list = list()
             for i in out_vars:
-                if 'DepotEdgeAssign['+str(d) in i['VarName']:
+                if 'DepotEdgeAssign['+str(d)+',' in i['VarName'] and i['X'] >= 0.9:
                     edge = i['VarName'].split('(')[1].split(')')[0].split(', ')
                     edge_name = '(' + edge[0] + ',' + edge[1] + ')'
                     dist = in_content['EDGES'][edge_name]['DISTANCE']
                     G.add_edge(edge[0], edge[1], weight=dist)
             
             if not euler.is_eulerian(G):
-                G1 = eulerize(G)
+                try:
+                    G1 = eulerize(G)
+                except nx.exception.NetworkXError:
+                    nx.draw(G, with_labels=True)
+                    plt.savefig(f'error_{file}_{d}.PNG')
+                    sys.exit()
                 deadhead += total_weight(G1)-total_weight(G)
             
         
+        for i in out_vars:
+            if 'LooseParity' in i['VarName']:
+                gained_imparity += 1
         
+        vertices = list()
+        for i in in_content['EDGES']:
+            aux = i.split('(')[1].split(',')[0]
+            if aux not in vertices:
+                vertices.append(aux)
+        
+        imparity_quotient = gained_imparity/len(vertices)
+        
+        dict_list.append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient})
         
         #calculate the deadhead value
         #create the pandas table with the values
@@ -168,3 +192,6 @@ for file in files:
         #Gained Imparity
         #Imparity Quotient
         #Deadhead
+        
+df = pd.DataFrame(dict_list)
+df.to_csv('out.csv',index=False)
