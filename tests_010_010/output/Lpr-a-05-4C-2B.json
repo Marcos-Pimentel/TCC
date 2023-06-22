@@ -1,1 +1,1 @@
-{ "SolutionInfo": { "Status": 9, "Runtime": 3.6000042672157288e+03, "Work": 4.1198629654739252e+03, "ObjVal": 1e+100, "ObjBound": 66202, "ObjBoundC": 6.6201628419736633e+04, "MIPGap": 1e+100, "IterCount": 27096661, "BarIterCount": 0, "NodeCount": 1296115, "SolCount": 0}}
+{ "SolutionInfo": { "Status": 9, "Runtime": 3.6000084650516510e+03, "Work": 4.1414411318462971e+03, "ObjVal": 1e+100, "ObjBound": 66202, "ObjBoundC": 6.6201693556769475e+04, "MIPGap": 1e+100, "IterCount": 27172859, "BarIterCount": 0, "NodeCount": 1300106, "SolCount": 0}}
