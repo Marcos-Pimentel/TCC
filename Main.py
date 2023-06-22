@@ -345,7 +345,7 @@ for input_file in files:
     model = gp.Model('RAP')
 
     #decision variables
-    b = model.addVars(depot_dist, name="DepotEdgeDistance") # pode ser excluida
+    # b = model.addVars(depot_dist, name="DepotEdgeDistance") # pode ser excluida
     x = model.addVars(depot_edge, vtype=gp.GRB.BINARY, name="DepotEdgeAssign")
     w = model.addVars(depot_vertex, vtype=gp.GRB.BINARY, name="DepotVertexIncident")
     z = model.addVars(parity, vtype=gp.GRB.INTEGER, lb = 0, name = "Parity")
