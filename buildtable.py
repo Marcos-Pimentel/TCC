@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 
 #in the output files, there is no weight on the edges, so it is needed to also use the input files to get these values
 
-out_path = "tests_010_005/output/"
-in_path = "tests_010_005/"
+test_config_name = "tests_020_005"
+out_path = test_config_name+"/output/"
+in_path = "Instances/"
 
 
 def eulerize(G):
@@ -179,7 +180,13 @@ for file in files:
         
         imparity_quotient = gained_imparity/len(vertices)
         
-        dict_list.append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient})
+        time = round(time,4)
+        gained_imparity = round(gained_imparity,4)
+        imparity_quotient = round(imparity_quotient,4)
+        objective = round(objective,4)
+        gap = round(gap,4)
+        
+        dict_list.append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient, 'Deadhead':deadhead})
         
         #calculate the deadhead value
         #create the pandas table with the values
@@ -194,4 +201,4 @@ for file in files:
         #Deadhead
         
 df = pd.DataFrame(dict_list)
-df.to_csv('out.csv',index=False)
+df.to_csv(test_config_name+".csv",index=False)
