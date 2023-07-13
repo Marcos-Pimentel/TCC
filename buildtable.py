@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 #in the output files, there is no weight on the edges, so it is needed to also use the input files to get these values
 
-test_config_name = "tests_020_005"
+test_config_name = "tests_020_010"
 out_path = test_config_name+"/output/"
 in_path = "Instances/"
 
@@ -147,8 +147,12 @@ for file in files:
         deadhead = 0
         gained_imparity = 0
         imparity_quotient = 0
+        demand_disparity = 0
+        total_demand = 0
+        depots_demand = list()
         
         for d in in_content['DEPOTS']:
+            demand = 0
             G = nx.Graph()
             aux_list = list()
             for i in out_vars:
@@ -157,6 +161,10 @@ for file in files:
                     edge_name = '(' + edge[0] + ',' + edge[1] + ')'
                     dist = in_content['EDGES'][edge_name]['DISTANCE']
                     G.add_edge(edge[0], edge[1], weight=dist)
+                    demand += float(in_content['EDGES'][edge_name]['DEMAND'])
+            
+            depots_demand.append(demand)
+            total_demand += demand
             
             if not euler.is_eulerian(G):
                 try:
@@ -167,6 +175,8 @@ for file in files:
                     sys.exit()
                 deadhead += total_weight(G1)-total_weight(G)
             
+        
+        
         
         for i in out_vars:
             if 'LooseParity' in i['VarName']:
@@ -186,7 +196,20 @@ for file in files:
         objective = round(objective,4)
         gap = round(gap,4)
         
+        
         dict_list.append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient, 'Deadhead':deadhead})
+        
+        
+        avg_demand = total_demand/len(depots_demand)
+        
+        for i in depots_demand:
+            if avg_demand - i > demand_disparity:
+                demand_disparity = avg_demand - i
+            elif i - avg_demand > demand_disparity:
+                demand_disparity = i - avg_demand
+        
+        # if file == 'Lpr-a-01-3C-7B.json':
+        #     print(100*demand_disparity/avg_demand)
         
         #calculate the deadhead value
         #create the pandas table with the values

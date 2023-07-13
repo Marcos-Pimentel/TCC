@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-with open('tests_010_010.csv', mode='r') as csv_file:
+with open('tests_010_005.csv', mode='r') as csv_file:
     csv_reader = csv.DictReader(csv_file)
     working_instances = 0
     time = 0
@@ -24,9 +24,15 @@ with open('tests_010_010.csv', mode='r') as csv_file:
     avg_time = (time + 3600*(320-working_instances+time_limit))/320
     avg_imparity_quotient = imparity_quotient/working_instances
     avg_gap = gap/time_limit
+    print("working avg time:")
     print (working_avg_time)
+    print("avg time:")
     print (avg_time)
+    print("avg imparity quotient:")
     print (avg_imparity_quotient)
+    print("avg gap:")
     print (avg_gap)
+    print("working instances:")
     print (working_instances)
+    print("time limit:")
     print (time_limit)
