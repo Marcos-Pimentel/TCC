@@ -10,9 +10,10 @@ import matplotlib.pyplot as plt
 
 #in the output files, there is no weight on the edges, so it is needed to also use the input files to get these values
 
-test_config_name = "tests_020_010"
+test_config_name = "tests_020_005"
 out_path = test_config_name+"/output/"
 in_path = "Instances/"
+table_path = "Tables/"+test_config_name+'/'
 
 
 def eulerize(G):
@@ -117,7 +118,24 @@ def read_input(file):
 
 files = next(walk(out_path), (None, None, []))[2]
 
-dict_list = list()
+dict_list = dict()
+
+dict_list['Lpr-a-01-2C'] = list()
+dict_list['Lpr-a-01-3C'] = list()
+dict_list['Lpr-a-02-2C'] = list()
+dict_list['Lpr-a-03-2C'] = list()
+dict_list['Lpr-a-03-3C'] = list()
+dict_list['Lpr-a-03-4C'] = list()
+dict_list['Lpr-a-03-5C'] = list()
+dict_list['Lpr-a-04-4C'] = list()
+dict_list['Lpr-a-04-5C'] = list()
+dict_list['Lpr-a-05-4C'] = list()
+dict_list['Lpr-b-01-2C'] = list()
+dict_list['Lpr-b-01-3C'] = list()
+dict_list['Lpr-b-02-2C'] = list()
+dict_list['Lpr-b-03-4C'] = list()
+dict_list['Lpr-b-04-4C'] = list()
+dict_list['Lpr-b-05-6C'] = list()
 
 for file in files:
     
@@ -137,6 +155,9 @@ for file in files:
     deadhead = 1e+100
     gap = solution_info['MIPGap']
     objective = solution_info['ObjVal']
+    
+    file_name_breakdown = file.split('-')
+    table_name = file_name_breakdown[0]+'-'+file_name_breakdown[1]+'-'+file_name_breakdown[2]+'-'+file_name_breakdown[3]
     
     
     if objective != 1e+100:
@@ -196,9 +217,7 @@ for file in files:
         objective = round(objective,4)
         gap = round(gap,4)
         
-        
-        dict_list.append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient, 'Deadhead':deadhead})
-        
+        dict_list[table_name].append({'Instance':file, 'Time':time, 'Gap':gap, 'Objective':objective, 'Gained Imparity':gained_imparity, 'Imparity Quotient':imparity_quotient, 'Deadhead':deadhead})
         
         avg_demand = total_demand/len(depots_demand)
         
@@ -223,5 +242,8 @@ for file in files:
         #Imparity Quotient
         #Deadhead
         
-df = pd.DataFrame(dict_list)
-df.to_csv(test_config_name+".csv",index=False)
+for i in dict_list:
+    df = pd.DataFrame(dict_list[i])
+    df.to_csv(table_path+i+".csv", index=False)
+# df = pd.DataFrame(dict_list)
+# df.to_csv(test_config_name+".csv",index=False)
