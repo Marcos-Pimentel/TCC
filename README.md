@@ -24,5 +24,7 @@ Pasta contendo as tabelas com as informações referentes aos testes feitos
 ## tests_0xx_0yy/
 
 Nessas pastas estão contidos tanto os .json obtidos após a execução dos testes, quanto as imagens referentes aos grafos antes e após o distritamento
+
 *xx* representa o valor da tolerância da disparidade das demandas em porcentagem
+
 *yy* representa o valor da tolerância da perda de paridade dos vértices em porcentagem
